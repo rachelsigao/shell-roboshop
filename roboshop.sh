@@ -16,4 +16,20 @@ do
     IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
     fi
     echo "$instance IP address: $IP"
+
+    aws route53 change-resource-record-sets --hosted-zone-id $ZONE_ID --change-batch '
+    {
+        "Comment": "Creating or updating a record set for cognito endpoint"
+        ,"Changes": [{
+        "Action"              : "UPSERT"
+        ,"ResourceRecordSet"  : {
+            "Name"              : "'$instance'.'rachelsigao.online'"
+            ,"Type"             : "A"
+            ,"TTL"              : 1210
+            ,"ResourceRecords"  : [{
+                "Value"         : "'$IP'"
+            }]
+        }
+        }]
+    }'
 done
