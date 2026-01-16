@@ -73,3 +73,5 @@ VALIDATE $? "Copying Mongodb repo and installing Mongodb Client"
 
 mongosh --host mongodb.rachelsigao.online </app/db/master-data.js &>>$LOG_FILE
 VALIDATE $? "Loading Master Data"
+
+ 
