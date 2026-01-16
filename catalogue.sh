@@ -46,7 +46,6 @@ VALIDATE $? "Installing Nodejs"
 #To avoid repeated executions
 id roboshop
 VALIDATE ()
-    {
     if [ $? -ne 0 ]
     then 
         useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
@@ -54,7 +53,6 @@ VALIDATE ()
     else 
         echo -e "System user roboshop already created... $Y Skipping $N"
     fi
-    }
 
 mkdir -p /app 
 VALIDATE $? "Creating app directory" 
@@ -62,6 +60,7 @@ VALIDATE $? "Creating app directory"
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOG_FILE
 VALIDATE $? "Downloading catalogue"
 
+rm -rf /app/*
 cd /app 
 unzip /tmp/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "Moving into app directory and unzipping catalogue"
@@ -83,5 +82,3 @@ VALIDATE $? "Copying Mongodb repo and installing Mongodb Client"
 
 mongosh --host mongodb.rachelsigao.online </app/db/master-data.js &>>$LOG_FILE
 VALIDATE $? "Loading Master Data"
-
- 
