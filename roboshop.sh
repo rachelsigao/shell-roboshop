@@ -48,6 +48,7 @@ do
 }
 EOF
 )
+    echo "Change batch: $CHANGE_BATCH"
 
     aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch "$CHANGE_BATCH"
     echo "$instance IP address: $IP"
