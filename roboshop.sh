@@ -13,6 +13,8 @@ do
         --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running,stopped,pending" \
         --query "Reservations[0].Instances[0].InstanceId" \
         --output text)
+
+        echo "Instance ID: $INSTANCE_ID"
     
     if [ "$INSTANCE_ID" == "None" ]; 
     then
