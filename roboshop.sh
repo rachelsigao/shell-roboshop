@@ -40,19 +40,19 @@ do
         "Comment": "Idempotent DNS update for $instance",
             "Changes": [{
                 "Action": "UPSERT",
-                    "ResourceRecordSet": {
+                "ResourceRecordSet": {
                     "Name": "$RECORD_NAME",
                     "Type": "A",
                     "TTL": 1,
-                        "ResourceRecords": [{
-                            "Value": "$IP"
-                        }]
-                    }
+                    "ResourceRecords": [{
+                        "Value": "$IP"
+                    }]
+                }
             }]
         }
     EOF
     )
-
+    
     aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch "$CHANGE_BATCH"
     echo "$instance IP address: $IP"
 done
