@@ -36,23 +36,23 @@ do
     echo "Updating Route53 records"
 
     CHANGE_BATCH=$(cat <<EOF
-        {
-        "Comment": "Idempotent DNS update for $instance",
-            "Changes": [{
-                "Action": "UPSERT",
-                "ResourceRecordSet": {
-                    "Name": "$RECORD_NAME",
-                    "Type": "A",
-                    "TTL": 1,
-                    "ResourceRecords": [{
-                        "Value": "$IP"
-                    }]
-                }
-            }]
-        }
-    EOF
-    )
-    
+{
+  "Comment": "Idempotent DNS update for $instance",
+  "Changes": [{
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "$RECORD_NAME",
+      "Type": "A",
+      "TTL": 1,
+      "ResourceRecords": [{
+        "Value": "$IP"
+      }]
+    }
+  }]
+}
+EOF
+)
+
     aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch "$CHANGE_BATCH"
     echo "$instance IP address: $IP"
 done
