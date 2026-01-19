@@ -5,6 +5,11 @@ SG_ID="sg-0c6ddf05e0664965e"
 ZONE_ID="Z03171147RXIT58UUGL6"
 DOMAIN_NAME="rachelsigao.online"
 
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 <instance-name> [instance-name ...]"
+  exit 1
+fi
+
 for instance in "$@"
 do
     echo "Checking instance: $instance"
@@ -48,8 +53,6 @@ do
 }
 EOF
 )
-    echo "Change batch: $CHANGE_BATCH"
-
-    aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch "$CHANGE_BATCH"
+        aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch "$CHANGE_BATCH"
     echo "$instance IP address: $IP"
 done
