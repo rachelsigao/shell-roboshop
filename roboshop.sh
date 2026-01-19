@@ -9,14 +9,9 @@ for instance in "$@"
 do
     echo "Checking instance: $instance"
     
-    INSTANCE_ID=$(aws ec2 describe-instances \
-        --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running,stopped,pending" \
-        --query "Reservations[0].Instances[0].InstanceId" \
-        --output text)
-
-        echo "Instance ID: $INSTANCE_ID"
+    INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running,stopped,pending" --query "Reservations[0].Instances[0].InstanceId" --output text)
     
-    if [ "$INSTANCE_ID" == "None" ]; 
+    if [ "$INSTANCE_ID" == "None" ];  
     then
         echo "Instance not found. Creating $instance..."
         
