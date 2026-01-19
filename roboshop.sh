@@ -8,20 +8,13 @@ DOMAIN_NAME="rachelsigao.online"
 for instance in "$@"
 do
     echo "Checking instance: $instance"
-    
-    INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running,stopped,pending" --query "Reservations[0].Instances[0].InstanceId" --output text)
+        INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running,stopped,pending" --query "Reservations[0].Instances[0].InstanceId" --output text)
     
     if [ "$INSTANCE_ID" == "None" ];  
     then
         echo "Instance not found. Creating $instance..."
         
-        INSTANCE_ID=$(aws ec2 run-instances \
-        --image-id "$AMI_ID" \
-        --instance-type t3.micro \
-        --security-group-ids "$SG_ID" \
-        --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" \
-        --query "Instances[0].InstanceId" \
-        --output text)
+        INSTANCE_ID=$(aws ec2 run-instances --image-id "$AMI_ID" --instance-type t3.micro --security-group-ids "$SG_ID" --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" --query "Instances[0].InstanceId" --output text)
     
         aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
     else
@@ -30,15 +23,9 @@ do
 
     if [ "$instance" != "frontend" ]
     then
-        IP=$(aws ec2 describe-instances \
-            --instance-ids "$INSTANCE_ID" \
-            --query 'Reservations[0].Instances[0].PrivateIpAddress' \
-            --output text)
+        IP=$(aws ec2 describe-instances --instance-ids "$INSTANCE_ID" --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
     else
-        IP=$(aws ec2 describe-instances \
-            --instance-ids "$INSTANCE_ID" \
-            --query 'Reservations[0].Instances[0].PublicIpAddress' \
-            --output text)
+        IP=$(aws ec2 describe-instances --instance-ids "$INSTANCE_ID" --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
     fi
 
     RECORD_NAME="$instance.$DOMAIN_NAME."
@@ -63,9 +50,6 @@ do
 EOF
 )
 
-    aws route53 change-resource-record-sets \
-        --hosted-zone-id "$ZONE_ID" \
-        --change-batch "$CHANGE_BATCH"
-
+    aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch "$CHANGE_BATCH"
     echo "$instance IP address: $IP"
 done
