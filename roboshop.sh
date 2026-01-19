@@ -5,7 +5,8 @@ SG_ID="sg-0c6ddf05e0664965e"
 ZONE_ID="Z03171147RXIT58UUGL6"
 DOMAIN_NAME="rachelsigao.online"
 
-if [ $# -eq 0 ]; then
+if [ $# -eq 0 ]; 
+then
   echo "Usage: $0 <instance-name> [instance-name ...]"
   exit 1
 fi
@@ -13,7 +14,6 @@ fi
 for instance in "$@"
 do
     echo "Checking instance: $instance"
-    
     INSTANCE_ID=$(aws ec2 run-instances --image-id "$AMI_ID" --instance-type t3.micro --security-group-ids "$SG_ID" --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" --query "Instances[0].InstanceId" --output text)
     
     if [ "$INSTANCE_ID" == "None" ];  
@@ -33,26 +33,26 @@ do
     fi
 
     RECORD_NAME="$instance.$DOMAIN_NAME."
-
-    echo "Updating Route53: $RECORD_NAME → $IP"
+    echo "Updating Route53 records"
 
     CHANGE_BATCH=$(cat <<EOF
-{
-  "Comment": "Idempotent DNS update for $instance",
-  "Changes": [{
-    "Action": "UPSERT",
-    "ResourceRecordSet": {
-      "Name": "$RECORD_NAME",
-      "Type": "A",
-      "TTL": 1,
-      "ResourceRecords": [{
-        "Value": "$IP"
-      }]
+    {
+    "Comment": "Idempotent DNS update for $instance",
+        "Changes": [{
+            "Action": "UPSERT",
+            "ResourceRecordSet": {
+            "Name": "$RECORD_NAME",
+            "Type": "A",
+            "TTL": 1,
+                "ResourceRecords": [{
+                    "Value": "$IP"
+                }]
+            }
+        }]
     }
-  }]
-}
-EOF
-)
-        aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch "$CHANGE_BATCH"
+    EOF
+    )
+    
+    aws route53 change-resource-record-sets --hosted-zone-id "$ZONE_ID" --change-batch "$CHANGE_BATCH"
     echo "$instance IP address: $IP"
 done
