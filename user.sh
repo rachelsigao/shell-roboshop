@@ -1,5 +1,6 @@
 #!/bin/bash
 
+START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -33,3 +34,49 @@ VALIDATE ()
         exit 1
     fi
     }
+
+dnf module disable nodejs -y &>>$LOG_FILE
+VALIDATE $? "Disabling Nodejs"
+
+dnf module enable nodejs:20 -y &>>$LOG_FILE
+VALIDATE $? "Enabling Nodejs 20"
+
+dnf install nodejs -y &>>$LOG_FILE
+VALIDATE $? "Installing Nodejs"
+
+#To avoid repeated executions
+id roboshop
+    if [ $? -ne 0 ]
+    then 
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+        VALIDATE $? "Creating roboshop system user" 
+    else 
+        echo -e "System user roboshop already created... $Y Skipping $N"
+    fi
+
+mkdir -p /app 
+VALIDATE $? "Creating app directory" 
+
+curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOG_FILE
+VALIDATE $? "Downloading catalogue"
+
+rm -rf /app/*
+cd /app 
+unzip /tmp/user.zip &>>$LOG_FILE
+VALIDATE $? "Moving into app directory and unzipping user"
+
+npm install &>>$LOG_FILE
+VALIDATE $? "Installing dependencies"
+
+cp $SCRIPT_DIR/user.service /etc/systemd/system/user.service 
+VALIDATE $? "Copying user repo"
+
+systemctl daemon-reload &>>$LOG_FILE
+systemctl enable user &>>$LOG_FILE
+systemctl start user
+VALIDATE $? "Reloading, enabling and starting user server"  
+
+END_TIME=$(date +%s)
+TOTAL_TIME=$(( $END_TIME - $START_TIME ))
+
+echo -e "Script exection completed successfully, $Y time taken: $TOTAL_TIME seconds $N" | tee -a $LOG_FILE
