@@ -77,6 +77,7 @@ VALIDATE $? "Reloading, enabling and starting shipping server"
 dnf install mysql -y  &>>$LOG_FILE
 VALIDATE $? "Install MySQL"
 
+#load the schema only once
 mysql -h mysql.rachelsigao.online -u root -p$MYSQL_ROOT_PASSWORD -e 'use cities' &>>$LOG_FILE
 if [ $? -ne 0 ]
 then
