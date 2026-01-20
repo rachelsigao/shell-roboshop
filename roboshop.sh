@@ -5,12 +5,14 @@ SG_ID="sg-0c6ddf05e0664965e"
 ZONE_ID="Z03171147RXIT58UUGL6"
 DOMAIN_NAME="rachelsigao.online"
 
+#to not allow empty values for instance names
 if [ $# -eq 0 ]; 
 then
   echo "Usage: $0 <instance-name> [instance-name ...]"
   exit 1
 fi
-
+ 
+#idempotent creation of instances and updating route53 records
 for instance in "$@"
 do
     echo "Checking instance: $instance"
@@ -25,6 +27,7 @@ do
         echo "Instance already exists: $INSTANCE_ID"
     fi
 
+#for getting IP address of the instance
     if [ "$instance" != "frontend" ]
     then
         IP=$(aws ec2 describe-instances --instance-ids "$INSTANCE_ID" --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
@@ -32,6 +35,7 @@ do
         IP=$(aws ec2 describe-instances --instance-ids "$INSTANCE_ID" --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
     fi
 
+#updating route53 records
     RECORD_NAME="$instance.$DOMAIN_NAME."
     echo "Updating Route53 records"
 
