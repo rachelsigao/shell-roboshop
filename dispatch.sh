@@ -35,8 +35,8 @@ VALIDATE ()
     fi
     }
 
-dnf module disable golang -y &>>$LOG_FILE
-VALIDATE $? "Disabling Golang"
+dnf install golang -y &>>$LOG_FILE
+VALIDATE $? "Installing Golang"
 
 #To avoid repeated executions
 id roboshop
