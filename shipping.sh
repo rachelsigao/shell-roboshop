@@ -14,14 +14,17 @@ SCRIPT_DIR=$PWD
 mkdir -p $LOGS_FOLDER
 echo "Script started executing at: $(date)" | tee -a $LOG_FILE
 
-#check for root access
+# check the user has root priveleges or not
 if [ $USERID -ne 0 ]
 then
-    echo -e "$R ERROR: $N Please run this script with root access" | tee -a $LOG_FILE
+    echo -e "$R ERROR:: Please run this script with root access $N" | tee -a $LOG_FILE
     exit 1 #give other than 0 upto 127
 else
-    echo "You are running with root access, Script is being installed" | tee -a $LOG_FILE
+    echo "You are running with root access" | tee -a $LOG_FILE
 fi
+
+echo "Please enter root password to setup"
+read -s MYSQL_ROOT_PASSWORD
 
 #Validate function takes input as exit status, what command they tried to install
 VALIDATE ()
