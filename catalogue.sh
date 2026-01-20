@@ -41,7 +41,7 @@ dnf module enable nodejs:20 -y &>>$LOG_FILE
 VALIDATE $? "Enabling Nodejs 20"
 
 dnf install nodejs -y &>>$LOG_FILE
-VALIDATE $? "Installing Nodejs"
+VALIDATE $? "Installing Nodejs:20"
 
 #To avoid repeated executions
 id roboshop
@@ -68,7 +68,7 @@ npm install &>>$LOG_FILE
 VALIDATE $? "Installing dependencies"
 
 cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service 
-VALIDATE $? "Copying catalogue repo"
+VALIDATE $? "Copying catalogue service"
 
 systemctl daemon-reload &>>$LOG_FILE
 systemctl enable catalogue &>>$LOG_FILE

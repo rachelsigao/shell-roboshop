@@ -42,7 +42,7 @@ dnf module enable nodejs:20 -y &>>$LOG_FILE
 VALIDATE $? "Enabling Nodejs 20"
 
 dnf install nodejs -y &>>$LOG_FILE
-VALIDATE $? "Installing Nodejs"
+VALIDATE $? "Installing Nodejs:20"
 
 #To avoid repeated executions
 id roboshop
@@ -69,7 +69,7 @@ npm install &>>$LOG_FILE
 VALIDATE $? "Installing dependencies"
 
 cp $SCRIPT_DIR/user.service /etc/systemd/system/user.service 
-VALIDATE $? "Copying user repo"
+VALIDATE $? "Copying user service"
 
 systemctl daemon-reload &>>$LOG_FILE
 systemctl enable user &>>$LOG_FILE
