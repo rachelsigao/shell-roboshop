@@ -58,6 +58,12 @@ cd /app
 unzip /tmp/dispatch.zip &>>$LOG_FILE
 VALIDATE $? "Moving into app directory and unzipping dispatch"
 
+cd /app 
+go mod init dispatch
+go get 
+go build
+VALIDATE $? "Downloading dependencies and building dispatch"
+
 cp $SCRIPT_DIR/dispatch.service /etc/systemd/system/dispatch.service 
 VALIDATE $? "Copying dispatch service"
 
